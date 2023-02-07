@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="button1">按钮1</button>
+    <button id="button2">按钮2</button>
+    <button id="button3">按钮3</button>
+    <script>
+        let button1 = document.getElementById('button1')
+        let button2 = document.getElementById('button2')
+        let button3 = document.getElementById('button3')
+
+        let setCommand = function (button, command) {
+            button.addEventListener('click', () => {
+                command.execute()
+            })
+        }
+
+        let MenuBar = {
+            refresh: function () {
+                console.log('刷新MenuBar');
+            }
+        }
+
+        let SubMenu = {
+            add: function () {
+                console.log('新增SubMenu');
+            },
+            del: function () {
+                console.log('移除SubMenu');
+            }
+        }
+
+        // let RefreshMenuBarCommand = function (receiver) {
+        //     this.receiver = receiver
+        // }
+        // RefreshMenuBarCommand.prototype.execute = function () {
+        //     this.receiver.refresh()
+        // }
+        // let AddSubMenuCommand = function (receiver) {
+        //     this.receiver = receiver
+        // }
+        // AddSubMenuCommand.prototype.execute = function () {
+        //     this.receiver.add()
+        // }
+        // let DelSubMenuCommand = function (receiver) {
+        //     this.receiver = receiver
+        // }
+        // DelSubMenuCommand.prototype.execute = function () {
+        //     this.receiver.del()
+        // }
+
+        // let refreshMenuBarCommand = new RefreshMenuBarCommand(MenuBar)
+        // let addSubMenuCommand = new AddSubMenuCommand(SubMenu)
+        // let delSubMenuCommand = new DelSubMenuCommand(SubMenu)
+
+        let RefreshMenuBarCommand = function (receiver) {
+            return {
+                execute: function () {
+                    receiver.refresh()
+                }
+            }
+        }
+        let AddSubMenuCommand = function (receiver) {
+            return {
+                execute: function () {
+                    receiver.add()
+                }
+            }
+        }
+        let DelSubMenuCommand = function (receiver) {
+            return {
+                execute: function () {
+                    receiver.del()
+                }
+            }
+        }
+
+        let refreshMenuBarCommand = RefreshMenuBarCommand(MenuBar)
+        let addSubMenuCommand = AddSubMenuCommand(SubMenu)
+        let delSubMenuCommand = DelSubMenuCommand(SubMenu)
+
+        setCommand(button1, refreshMenuBarCommand)
+        setCommand(button2, addSubMenuCommand)
+        setCommand(button3, delSubMenuCommand)
+
+    </script>
+</body>
+</html>
