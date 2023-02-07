@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+  <script>
+    // js实现call、apply
+    Function.prototype.callFn = function (context) {
+      var args = []
+      for (let i = 1; i < arguments.length; i++) {
+        args.push(arguments[i]);
+      }
+      context = context || window
+      context.fn = this
+      var result = eval('context.fn(' + args + ')')
+      delete context.fn
+      return result
+    }
+
+    Function.prototype.applyFn = function (context, args) {
+      context = context || window
+      context.fn = this
+      var result = eval('context.fn(' + args + ')')
+      delete context.fn
+      return result
+    }
+
+    // test
+    window.a = 1
+    window.b = 'b'
+    let o1 = {
+      a: 2,
+    }
+    function fn(num) {
+      var n = num || 0
+      alert(this.a + n)
+      return this.a + n
+    }
+    // let sum = fn.call(o1)
+    // let sum = fn.callFn(o1, 1)
+    // fn.apply(o1, [1, 2])
+    let sum = fn.applyFn(o1, [1, 2])
+    console.log(sum);
+  </script>
+</body>
+</html>

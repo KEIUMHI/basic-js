@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // 内部迭代器
+    function each (ary, callback) {
+      for (let i = 0; i < ary.length; i++) {
+        // const element = ary[i];
+        callback(ary[i], i)
+      }
+    }
+
+    // let ary = [1,2,3,4,5]
+    // each(ary, (item, i) => {
+    //   console.log(item, i);
+    // })
+
+    // 外部迭代器
+    let itr = function (obj) {
+      let current = 0
+      let next = function () {
+        current += 1
+      }
+      let isDone = function () {
+        return current >= obj.length
+      }
+      let getCurrItem = function () {
+        return obj[current]
+      }
+      return {
+        next,
+        isDone,
+        getCurrItem
+      }
+    }
+
+    function compare (itr1, itr2) {
+      while(!(itr1.isDone() || itr2.isDone())) {
+        if (itr1.getCurrItem() !== itr2.getCurrItem()) {
+          alert('itr1 和 itr2 不同')
+          break
+        }
+        itr1.next()
+        itr2.next()
+      }
+      alert('相同')
+    }
+    let itr1 = itr([1,2,1])
+    let itr2 = itr([1,2,3])
+    console.log(itr1);
+    compare(itr1, itr2)
+
+    // 迭代对象字面量和类数组
+    function isArrayLike(obj) {
+      return Object.hasOwnProperty.call(obj, 'length')
+    }
+
+    function eachAry (obj, callback) {
+      let i = 0
+      let isArray = isArrayLike(obj)
+      if (isArray) {
+        for (; i < obj.length; i++) {
+          // const element = obj[i];
+          let value = callback.call(obj[i], obj[i], i)
+          if (value === false) {
+            break
+          }
+        }
+      } else {
+        for (const key in obj) {
+          if (Object.hasOwnProperty.call(obj, key)) {
+            callback.call(obj, obj[key], key, i)
+          }
+          i++
+        }
+      }
+    }
+
+    eachAry([1,2,3,4,5], (item, index) => {
+      console.log(item, index);
+      if (item > 2) {
+        return false
+      }
+    })
+
+    eachAry({length: 3, 0: 1, 0: 2, 0: 3}, (item, index) => {
+      console.log(item, index);
+    })
+
+    eachAry({a: 1, b: 2, c: 3}, (item, key, index) => {
+      console.log(item, key, index, '---');
+    })
+
+    // 倒序迭代器
+    function reserveEach (ary, callback) {
+      for (let l = ary.length, i = l - 1; i >= 0; i--) {
+        callback(ary[i], i)
+      }
+    }
+
+    reserveEach([1,2,3,4,5], (item, i) => {
+      console.log(item,i);
+    })
+    
+  </script>
+</body>
+</html>

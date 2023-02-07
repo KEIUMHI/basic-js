@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <button id="first" onclick="firstHandle()">123</button>
+
+  <script>
+    // console.time() // 计算主线程代码耗时
+    // let count = 0, intervalId
+    // setTimeout(() => {
+    //   // 延时器回调执行将耗费6ms
+    //   console.log('延时器到10ms到期');
+    // }, 10);
+    // intervalId = setInterval(() => {
+    //   // interval回调执行将耗费10ms
+    //   console.log('interval触发')
+    //   count++
+    //   if (count > 10) {
+    //     clearInterval(intervalId)
+    //   }
+    // }, 10);
+    // const btn1 = document.getElementById('first')
+    // const firstHandle = () => {
+    //   // 按钮触发事件回调执行将耗费10ms
+    //   console.log('按钮点击1');
+    // }
+    // btn1.addEventListener('click', firstHandle)
+    // // btn1.click()
+    // console.timeEnd() // 主线程代码运行将耗费18ms
+
+    // 程序开始执行
+    // 此时程序状态如下
+    // 宏任务队列 -> [主线程] | 微任务队列 => []
+
+    // tip: javascript作为单线程任务，一旦有一个任务在执行，其他任务都不能终止此任务执行（浏览器等特殊情况除外，如无限循环主动终止程序
+
+    // 程序执行至6ms
+    // 一个用户触发了按钮1回调事件
+    // 此时程序状态如下
+    // 宏任务队列 -> [主线程，用户单击事件] | 微任务队列 => []
+    
+    // 程序执行至10ms
+    // setTimeout、setInterval到期
+    // 此时程序状态如下
+    // 宏任务队列 -> [主线程，用户单击事件，timeout事件，interval事件] | 微任务队列 => []
+    // 此时主线程还未执行完毕，因为tip的缘故，所以用户单击事件，timeout事件和interval事件将等待主线程执行结束
+
+    // 程序执行至18ms
+    // 主程序执行结束，事件循环进入下一阶段，检查微任务队列，发现微任务队列为空，则跳过微任务执行阶段，进入UI渲染阶段。
+    // UI渲染结束重新进入新一轮eventloop
+    // javascript引擎检查宏任务队列，执行用户单击事件
+    // 用户单击事件将耗时10ms
+    // 此时程序状态如下
+    // 宏任务队列 -> [用户单击事件，timeout事件，interval事件] | 微任务队列 => []
+    
+    // 程序执行至20ms
+    // 此时interval又一次到期，可是此时已有一个任务正在处理中，所以不会触发执行回调。不过需要注意的是，interval回调只会注册一次，
+    // 也就是说，当上一次interval回调执行之前，如果需要再次注册回调事件，那么此时将被忽略
+
+    // 程序执行至28ms
+    // 用户单击事件执行结束，事件循环继续检查微任务队列，发现为空，跳过处理，接着进行ui渲染后再次返回检查宏任务队列
+    // 此时程序状态如下
+    // 宏任务队列 -> [timeout事件，interval事件] | 微任务队列 => []
+    // timeout事件开始执行
+
+    // 程序执行至30ms
+    // timeout事件处于执行中的状态
+    // 此时interval又一次到期，但因为timeout事件处于执行状态并且interval事件已注册，所以再此被忽略
+    // 此时程序状态如下
+    // 宏任务队列 -> [timeout事件，interval事件] | 微任务队列 => []
+
+    // 程序执行至34ms
+    // timeout事件任务执行结束
+    // 此时程序状态如下
+    // 宏任务队列 -> [interval事件] | 微任务队列 => []
+    // 开始执行interval事件
+
+    // 程序执行至40ms
+    // interval再一次到期
+    // 发现interval事件已被调用，interval事件将重新注册并推入宏任务队列
+    // 此时程序状态如下
+    // 宏任务队列 -> [interval事件（执行中），interval事件] | 微任务队列 => []
+
+    // 程序执行至44ms
+    // 此时程序状态如下
+    // 宏任务队列 -> [interval事件] | 微任务队列 => []
+    // 程序执行至50ms
+    // 此时程序状态如下
+    // 宏任务队列 -> [interval事件（执行中）， interval事件] | 微任务队列 => []
+    // 以此类推...
+
+  </script>
+
+  <script>
+//     let i = 0;
+
+// let start = Date.now();
+
+// function count() {
+
+//   // 做一个繁重的任务
+//   for (let j = 0; j < 1e9; j++) {
+//     i++;
+//   }
+
+//   alert("Done in " + (Date.now() - start) + 'ms');
+// }
+
+// count();
+
+// let i = 0;
+
+// let start = Date.now();
+
+// function count() {
+
+//   // 做繁重的任务的一部分 (*)
+//   do {
+//     i++;
+//   } while (i % 1e6 != 0);
+
+//   if (i == 1e9) {
+//     alert("Done in " + (Date.now() - start) + 'ms');
+//   } else {
+//     setTimeout(count); // 安排（schedule）新的调用 (**)
+//   }
+
+// }
+
+// count();
+  </script>
+
+  <script>
+    // const rowCount = 20000; 
+    // const divideInto = 4; 
+    // const chunkSize = rowCount / divideInto; 
+    // let iteration = 0; 
+    // const table = document.getElementsByTagName("tbody")[0]; 
+    // setTimeout(function generateRows() { 
+    //   const base = chunkSize * iteration; 
+    //   for (let i = 0; i < chunkSize; i++) { 
+    //     const tr = document.createElement("tr"); 
+    //     for (let t = 0; t < 6; t++) { 
+    //       const td = document.createElement("td"); 
+    //       td.appendChild( 
+    //       document.createTextNode((i + base) + "," + t + 
+    //       "," + iteration)); 
+    //       tr.appendChild(td); 
+    //     } 
+    //   table.appendChild(tr); 
+    // } 
+    // iteration++; 
+    // if (iteration < divideInto) 
+    // setTimeout(generateRows, 0); 
+    // }, 0);
+
+  </script>
+</body>
+</html>

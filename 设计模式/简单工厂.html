@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #alert-boxes {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+    }
+    .alert {
+      margin-bottom: 20px;
+      width: 200px;
+      height: 50px;
+      border: 1px solid #333;
+      border-radius: 4px;
+      opacity: 0;
+      transform: translateX(15px);
+      transition: all .28s;
+    }
+    .alert .alert-content {
+      text-align: center;
+      color: red;
+    }
+    .alert.confirm {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .alert.confirm .confirm-button {
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+</body>
+</html>
+
+<script>
+  // function Alert (text) {
+  //   this.content = text
+  // }
+  // Alert.prototype.show = function () {
+  //   // 显示警示框
+  //   var alertEl = document.createElement('div')
+  //   alertEl.classList.add('alert')
+  //   var contentEl = document.createElement('p')
+  //   contentEl.classList.add('alert-content')
+  //   contentEl.innerHTML = this.content
+  //   alertEl.appendChild(contentEl)
+
+  //   var alertBoxes = document.getElementById('alert-boxes')
+  //   if (alertBoxes) {
+  //     alertBoxes.appendChild(alertEl)
+  //   } else {
+  //     alertBoxes = document.createElement('div')
+  //     alertBoxes.id = 'alert-boxes'
+  //     alertBoxes.appendChild(alertEl)
+  //     document.body.appendChild(alertBoxes)
+  //   }
+  //   setTimeout(() => {
+  //     alertEl.style.transform = 'translateX(0)'
+  //     alertEl.style.opacity = '1'
+  //   }, 0);
+  //   setTimeout(function () {
+  //     alertEl.style.transform = 'translateX(15px)'
+  //     alertEl.style.opacity = '0'
+  //     setTimeout(() => {
+  //       alertBoxes.removeChild(alertEl)
+  //     }, 280);
+  //   }, 3000)
+  // }
+
+  // var userNameAlert = new LoginAlert('用户名称不能超过16个字符')
+  // userNameAlert.show()
+
+  // var passwordAlert = new LoginAlert('密码长度必须大于6个字符')
+  // passwordAlert.show()
+
+  // function LoginPrompt (text) {
+  //   this.content = text
+  // }
+
+  // 简单工厂的本质是创建一个对象
+  // 将相似点抽离出来，不同的点做特异性处理
+
+  // 创建弹窗 弹窗工厂
+  function createPop (text, type) {
+    // 创建个对象
+    var o = {}
+    // 相同点抽离
+    o.content = text
+    o.show = function () {
+      var alertEl = document.createElement('div')
+      alertEl.classList.add('alert')
+      var contentEl = document.createElement('p')
+      contentEl.classList.add('alert-content')
+      contentEl.innerHTML = this.content
+      alertEl.appendChild(contentEl)
+
+      var alertBoxes = document.getElementById('alert-boxes')
+      if (alertBoxes) {
+        alertBoxes.appendChild(alertEl)
+      } else {
+        alertBoxes = document.createElement('div')
+        alertBoxes.id = 'alert-boxes'
+        alertBoxes.appendChild(alertEl)
+        document.body.appendChild(alertBoxes)
+      }
+      setTimeout(() => {
+        alertEl.style.transform = 'translateX(0)'
+        alertEl.style.opacity = '1'
+      }, 0);
+      setTimeout(function () {
+        alertEl.style.transform = 'translateX(15px)'
+        alertEl.style.opacity = '0'
+        setTimeout(() => {
+          alertBoxes.removeChild(alertEl)
+        }, 280);
+      }, 3000)
+    }
+    // 特殊处理不同点
+    switch (type) {
+      case 'confirm':
+        o.show = function () {
+          var alertEl = document.createElement('div')
+          alertEl.classList.add('alert confirm')
+          var contentEl = document.createElement('p')
+          contentEl.classList.add('alert-content')
+          contentEl.innerHTML = this.content
+          alertEl.appendChild(contentEl)
+
+          var confirmButtonEl = document.createElement('button')
+          confirmButtonEl.classList.add('confirm-button')
+          confirmButtonEl.innerHTML = '确认'
+          alertEl.appendChild(confirmButtonEl)
+
+          // var alertBoxes = document.getElementById('alert-boxes')
+          // if (alertBoxes) {
+          //   alertBoxes.appendChild(alertEl)
+          // } else {
+          //   alertBoxes = document.createElement('div')
+          //   alertBoxes.id = 'alert-boxes'
+          //   alertBoxes.appendChild(alertEl)
+          //   document.body.appendChild(alertBoxes)
+          // }
+          setTimeout(() => {
+            alertEl.style.transform = 'translateX(0)'
+            alertEl.style.opacity = '1'
+          }, 0);
+          setTimeout(function () {
+            alertEl.style.transform = 'translateX(15px)'
+            alertEl.style.opacity = '0'
+            setTimeout(() => {
+              alertBoxes.removeChild(alertEl)
+            }, 280);
+          }, 3000)
+        }
+        break;
+    
+      case 'prompt': 
+      // ...
+      break;
+      default:
+        break;
+    }
+    return o
+  }
+// debugger
+
+  var userNameAlert = createPop('用户名称不能超过16个字符')
+  userNameAlert.show()
+
+  var passwordAlert = createPop('密码长度必须大于6个字符')
+  passwordAlert.show()
+
+  var submitConfirm = createPop('确认提交吗？', 'confirm')
+  submitConfirm.show()
+</script>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  <button id="btn"> count：<span id="countContent">0</span></button>
+  <script>
+    let event = {
+      cacheList: {},
+      listen: function (key, fn) {
+        if (!this.cacheList[key]) {
+          this.cacheList[key] = []
+        }
+        this.cacheList[key].push(fn)
+      },
+      remove: function (key, fn) {
+        if (this.cacheList[key]) {
+          if (!fn) {
+            this.cacheList[key] = []
+          } else {
+            for (let i = 0, _fn = this.cacheList[key][i]; i < this.cacheList[key].length; i++) {
+              if (_fn === fn) {
+                this.cacheList[key].splice(i, 1)
+                break
+              }
+            }
+          }
+        }
+      },
+      trigger: function () {
+        let key = Array.prototype.shift.apply(arguments)
+        for (let i = 0; i < this.cacheList[key]?.length ?? 0; i++) {
+          let fn = this.cacheList[key][i]
+          fn.apply(this, arguments)
+        }
+      }
+    }
+
+    function installEvent (obj) {
+      for (const key in event) {
+        if (Object.hasOwnProperty.call(event, key)) {
+          obj[key] = event[key]
+        }
+      }
+    }
+
+    let buildingSeller = {
+      buildings: {
+        ChengBeiHuaYuan: {
+          name: '城北花苑',
+          address: '杭州市上城区九华路121'
+        },
+        ChengNanJingYuan: {
+          name: '城南景苑',
+          address: '杭州市上城区九华路323'
+        }
+      },
+      getBuildings: function (key) {
+        if (key) {
+          return buildings[key]
+        }
+        return buildings
+      }
+    }
+
+    // installEvent(buildingSeller)
+    // console.log(buildingSeller);
+
+
+    // let xiaoming = function (msg, num) {
+    //   console.log('小明收到消息:', msg, num)
+    // }
+    // let xiaohong = function (msg, num) {
+    //   console.log('小红收到消息', msg, num)
+    // }
+    // buildingSeller.listen(buildingSeller.buildings.ChengBeiHuaYuan, xiaoming)
+    // buildingSeller.listen(buildingSeller.buildings.ChengBeiHuaYuan, xiaohong)
+    // console.log(buildingSeller.cacheList);
+    // // 两天后发布楼市信息
+    // setTimeout(() => {
+    //   buildingSeller.trigger(buildingSeller.buildings.ChengBeiHuaYuan, '120平特价出售只需300万！', 300)
+    //   // 小明觉得不合适放弃了关注
+    //   buildingSeller.remove(buildingSeller.buildings.ChengBeiHuaYuan, xiaoming)
+    // }, 2000);
+    // // 第三天
+    // setTimeout(() => {
+    //   buildingSeller.trigger(buildingSeller.buildings.ChengBeiHuaYuan, '120平特价出售首付仅需28%！', 300)
+    // }, 3000);
+
+
+    // 中介的实现
+    let Event = (function () {
+      let clientList = {}
+      let listen = function (key, fn) {
+        if (!clientList[key]) {
+          clientList[key] = []
+        }
+        clientList[key].push(fn)
+      }
+      let remove = function (key, fn) {
+        let fns = clientList[key]
+        if (!fns) {
+          return false
+        }
+        if (!fn) {
+          fns && (fns.length = 0)
+        } else {
+          for (let i = 0, l = fns.length; i < l; i++) {
+            if (fns[i] === fn) {
+              fns.splice(i, 1)
+              break
+            }
+          }
+        }
+      }
+      let trigger = function () {
+        let key = Array.prototype.shift.call(arguments)
+        let fns = clientList[key]
+        if (!fns || fns.length === 0) {
+          return false
+        }
+        for (let i = 0, fn; fn = fns[i++];) {
+          fn.apply(this, arguments)
+        }
+      }
+      return {
+        trigger,
+        listen,
+        remove,
+      }
+    })()
+
+    let a = (function () {
+      let count = 0
+      let button = document.getElementById('btn')
+      button.addEventListener('click', () => {
+        Event.trigger('countPlus', ++count)
+      })
+    })()
+
+    let b = (function () {
+      let updateCountContent = (function () {
+        let countContent = document.getElementById('countContent')
+        return function (html) {
+          countContent.innerHTML = html
+        }
+      })()
+      Event.listen('countPlus', updateCountContent)
+    })()
+
+    
+
+  </script>
+</body>
+</html>

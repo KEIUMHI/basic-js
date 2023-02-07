@@ -1,0 +1,47 @@
+<script>
+  function Book(id, name, price) {
+    // 私有属性、方法
+    var number = 0
+    var checkId = function () {
+      return !!this.id
+    }
+    if (this instanceof Book) {
+      // 公有属性、方法
+      this.id = id
+      this.name = name
+      this.price = price
+      this.setNumber = function (num) {
+        number++
+      }
+      this.getNumber = function () {
+        return number
+      }
+    } else {
+      // return new Book(id, name, price)
+      throw new Error('Book must be created by New.')
+    }
+  }
+  // 公有方法
+  Book.prototype.setPrice = function (price) {
+    this.price = price
+  }
+  Book.prototype.getPrice = function () {
+    return this.price
+  }
+
+  // 类的静态属性、方法
+  Book.isChinese = true
+
+  // Book执行完毕作用域销毁
+  // setNumber、getNumber依旧能访问到number
+  const myBook = new Book(1, '你不知道的JavaScript', 59)
+  const myNewBook = new Book(2, 'JavaScript设计模式', 39)
+  // const errBook = Book(1, 'CSS世界', 56)
+  
+  console.log(Object.freeze({}));
+
+  // 安全创建对象
+
+
+
+</script>
